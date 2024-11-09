@@ -1,13 +1,12 @@
+import os
 import torch
 
-def check_cuda():
-    if torch.cuda.is_available():
-        print("CUDA is available.")
-        print(f"Number of CUDA devices: {torch.cuda.device_count()}")
-        print(f"Current device: {torch.cuda.current_device()}")
-        print(f"Device name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
-    else:
-        print("CUDA is not available.")
+# 查看CUDA_VISIBLE_DEVICES变量
+print("CUDA_VISIBLE_DEVICES:", os.environ.get("CUDA_VISIBLE_DEVICES"))
 
-if __name__ == "__main__":
-    check_cuda()
+# 检查可用的GPU数量
+print("Number of available GPUs:", torch.cuda.device_count())
+
+# 打印每个GPU设备的名称
+for i in range(torch.cuda.device_count()):
+    print(f"GPU {i}: {torch.cuda.get_device_name(i)}")

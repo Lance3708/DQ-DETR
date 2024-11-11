@@ -1,5 +1,5 @@
 {
-  "config_file": "config/DQ_5scale.py",
+  "config_file": "DQ-DETR/config/DQ_5scale.py",
   "options": {
     "dn_scalar": 100,
     "embed_init_tgt": false,
@@ -9,15 +9,15 @@
     "dn_box_noise_scale": 1.0
   },
   "dataset_file": "aitod_v2",
-  "coco_path": "/nfs/home/hoiliu/Datasets/aitod",
+  "coco_path": "AITOD-Dataset/aitod",
   "coco_panoptic_path": null,
   "remove_difficult": false,
   "fix_size": false,
-  "output_dir": "logs/DQ_eval",
+  "output_dir": "DQ-DETR/logs/DQ_eval",
   "note": "",
   "device": "cuda",
   "seed": 42,
-  "resume": "/nfs/home/hoiliu/dqdetr/weights/dqdetr_best305.pth",
+  "resume": "/home/lance/workspace/AITOD-Dataset/xview/xview_aitod_sets",
   "pretrain_model_path": null,
   "finetune_ignore": null,
   "start_epoch": 0,

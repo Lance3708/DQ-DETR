@@ -1,5 +1,5 @@
 {
-  "config_file": "DQ-DETR/config/DQ_5scale.py",
+  "config_file": "/home/lance/workspace/DQ-DETR/config/DQ_5scale.py",
   "options": {
     "dn_scalar": 100,
     "embed_init_tgt": false,
@@ -9,19 +9,19 @@
     "dn_box_noise_scale": 1.0
   },
   "dataset_file": "aitod_v2",
-  "coco_path": "AITOD-Dataset/aitod",
+  "coco_path": "/home/lance/workspace/AITOD-Dataset/aitod",
   "coco_panoptic_path": null,
   "remove_difficult": false,
   "fix_size": false,
-  "output_dir": "DQ-DETR/logs/DQ_eval",
+  "output_dir": "logs/DQDETR_ver1",
   "note": "",
   "device": "cuda",
   "seed": 42,
-  "resume": "/home/lance/workspace/AITOD-Dataset/xview/xview_aitod_sets",
-  "pretrain_model_path": null,
+  "resume": "",
+  "pretrain_model_path": "/home/lance/workspace/DQ-DETR/pretrained/pretrain_model.pth",
   "finetune_ignore": null,
   "start_epoch": 0,
-  "eval": true,
+  "eval": false,
   "num_workers": 10,
   "test": false,
   "debug": false,
@@ -32,6 +32,6 @@
   "dist_url": "env://",
   "rank": 0,
   "local_rank": 0,
-  "amp": false,
+  "amp": true,
   "distributed": false
 }

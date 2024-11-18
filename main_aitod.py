@@ -10,6 +10,8 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, DistributedSampler
 
+## from torch.utils.tensorboard import SummaryWriter
+
 from util.get_param_dicts import get_param_dict
 from util.logger import setup_logger
 from util.slconfig import DictAction, SLConfig
@@ -19,6 +21,7 @@ import util.misc as utils
 import datasets
 from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
+
 
 
 def get_args_parser():
@@ -120,14 +123,21 @@ def main(args):
         with open(save_json_path, 'w') as f:
             json.dump(vars(args), f, indent=2)
         logger.info("Full config saved to {}".format(save_json_path))
-    logger.info('world size: {}'.format(args.world_size))
-    logger.info('rank: {}'.format(args.rank))
-    logger.info('local_rank: {}'.format(args.local_rank))
+    ## 因为单卡训练 不需要记录
+    ## logger.info('world size: {}'.format(args.world_size))
+    ## logger.info('rank: {}'.format(args.rank))
+    ## logger.info('local_rank: {}'.format(args.local_rank))
     logger.info("args: " + str(args) + '\n')
 
 
     if args.frozen_weights is not None:
         assert args.masks, "Frozen training is meant for segmentation only"
+        
+    ## # 初始化 SummaryWriter
+    ## log_dir = os.path.join(args.output_dir, 'tensorboard_logs')
+    ## os.makedirs(log_dir, exist_ok=True)
+    ## writer = SummaryWriter(log_dir=args.output_dir)
+
     #print(args)
 
     device = torch.device(args.device)
@@ -272,6 +282,20 @@ def main(args):
         train_stats = train_one_epoch(
             model, criterion, data_loader_train, optimizer, device, epoch,
             args.clip_max_norm, wo_class_error=wo_class_error, lr_scheduler=lr_scheduler, args=args, logger=(logger if args.save_log else None), ema_m=ema_m)
+        
+        #####
+        print("\n\n\n\ntrain_stats['loss']")
+        print(train_stats['loss'])
+        print("\nepoch")
+        print(epoch)
+        print("\n\n\n\n")
+        #####
+            
+            
+        ## writer.add_scalar('Loss/train', train_stats['loss'], epoch)
+        ## ## 未返回
+        ## ## writer.add_scalar('Accuracy/train', train_stats['accuracy'], epoch)
+        
         if args.output_dir:
             checkpoint_paths = [output_dir / 'checkpoint.pth']
 
@@ -302,6 +326,19 @@ def main(args):
                 model, criterion, postprocessors, data_loader_val, base_ds, device, args.output_dir,
                 wo_class_error=wo_class_error, args=args, logger=(logger if args.save_log else None)
             )
+            
+            #####
+            print("\n\n\n\ntest_stats['loss']")
+            print(test_stats['loss'])
+            print("\nepoch")
+            print(epoch)
+            print("\n\n\n\n")
+            #####
+           
+            ## writer.add_scalar('Loss/val', test_stats['loss'], epoch)
+            ## ##未返回Val Acc
+            ## ##writer.add_scalar('Accuracy/val', test_stats['accuracy'], epoch)
+            
             map_regular = test_stats['coco_eval_bbox'][0]
             _isbest = best_map_holder.update(map_regular, epoch, is_ema=False)
             log_stats = {
@@ -349,6 +386,7 @@ def main(args):
                         for name in filenames:
                             torch.save(coco_evaluator.coco_eval["bbox"].eval,
                                        output_dir / "eval" / name)
+                            
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
@@ -360,6 +398,9 @@ def main(args):
         for filename in copyfilelist:
             print("Removing: {}".format(filename))
             remove(filename)
+
+    ## # 关闭 SummaryWriter
+    ## writer.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
